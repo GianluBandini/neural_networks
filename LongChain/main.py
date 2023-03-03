@@ -8,7 +8,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
 import os
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 with open('text.txt') as f:
     state_of_the_union = f.read()
