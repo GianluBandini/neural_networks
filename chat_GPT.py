@@ -10,6 +10,7 @@ lr = 1e-3 #learning rate
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 eval_intervals = 200 
 eval_iters = 200
+n_embd = 32 #embedding dimension
 
 #-------------------#
 
@@ -45,7 +46,7 @@ def get_batch(split):
     x, y = x.to(device), y.to(device)
     return x,y
 
-@torch.no_grad() 
+@torch.no_grad() #never calling .bacward() on the loss, so we can save memory by not storing the gradients. IN this way we are more efficient
 def estimate_loss():
     out = {}
     model.eval()
@@ -64,13 +65,21 @@ def estimate_loss():
 #Model
 class BigramLanguageModel(nn.Module):
 
-    def __init__(self, vocab_size):
+    def __init__(self):
         super().__init__()
-        self.token_emb = nn.Embedding(vocab_size, vocab_size)
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embd) #embedding layer for tokens
+        self.position_embedding_table = nn.Embedding(block_size, n_embd) #embedding layer for position
+        self.lm_head = nn.Linear(n_embd, vocab_size) #linear layer 
 
     def forward(self, idx, targets = None):
+        B, T = idx.shape
+        
 
-        logits = self.token_emb(idx)
+        tok_emb = self.token_embedding_table(idx) # (B,T,n_embd)
+        pos_emb = self.position_embedding_table(torch.arange(T).to(device)) # (T,n_embd)
+        x = tok_emb + pos_emb # (B,T,n_embd) note that pos_emb is broadcasted to B,T,n_embd
+        # x holds the embeddings of the tokens and their positions
+        logits = self.lm_head(x) # (B,T,vocab_size)
 
         if targets is None:
             loss = None
@@ -98,7 +107,7 @@ class BigramLanguageModel(nn.Module):
         return idx
     
 
-model = BigramLanguageModel(vocab_size).to(device)
+model = BigramLanguageModel().to(device)
 
 #optimizer
 optimizer = torch.optim.Adam(model.parameters(), lr=lr)
