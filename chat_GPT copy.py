@@ -22,7 +22,10 @@ with open('Transcript.txt', 'r',encoding = 'utf-8') as f:
     text = f.read()
 
 #unique characters in the text and the number of them
-chars = sorted(list(set(text)))
+# chars = sorted(list(set(text)))
+# chars = chars[:19]+ chars[46:48] + chars[74:]
+splitted_text = re.findall(r'\S+', text)
+chars = sorted(set(re.findall(r'\S+', text)))
 vocab_size = len(chars)
 
 #dictionary to convert characters to indices and vice versa
@@ -33,7 +36,7 @@ encode = lambda s : [stoi[c] for c in s] #convert string to list of indices
 decode = lambda l : ''.join([itos[i] for i in l]) #convert list of indices to string
 
 #Train and test splits
-data = torch.tensor(encode(text),dtype=torch.long)
+data = torch.tensor(encode(splitted_text),dtype=torch.long)
 n = int(len(data)*0.9) #90% train, 10% test
 train_data = data[:n] #first 90% of data
 val_data = data[n:] #last 10% of data

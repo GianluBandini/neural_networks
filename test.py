@@ -1,28 +1,16 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import re
+#text to train on
+with open('Transcript.txt', 'r',encoding = 'utf-8') as f:
+    text = f.read()
 
-# Generate some random data
-data = np.random.rand(5, 5)
+#unique characters in the text and the number of them
+chars = sorted(list(set(text)))
+print(chars)
+print('------------------')
+chars = chars[:19]+ chars[46:48] + chars[74:]
+print('------------------')
+print(chars[46:48])
+print('------------------')
+print(chars[74:])
+chars += sorted(set(re.findall(r'\S+', text)))
 
-# Plot the heatmap
-fig, ax = plt.subplots()
-im = ax.imshow(data)
-
-# Show the values in each cell
-for i in range(data.shape[0]):
-    for j in range(data.shape[1]):
-        text = ax.text(j, i, round(data[i, j], 2), ha="center", va="center", color="w")
-
-# Set the x-axis and y-axis ticks
-ax.set_xticks(np.arange(data.shape[1]))
-ax.set_yticks(np.arange(data.shape[0]))
-
-# Set the x-axis and y-axis tick labels
-ax.set_xticklabels(np.arange(1, data.shape[1]+1))
-ax.set_yticklabels(np.arange(1, data.shape[0]+1))
-
-# Set the plot title and color bar
-ax.set_title("Heatmap with Values")
-cbar = ax.figure.colorbar(im, ax=ax)
-
-plt.show()
